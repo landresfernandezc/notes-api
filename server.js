@@ -56,29 +56,36 @@ app.post("/notes", async (req, res) => {
   }
 });
 app.put("/updateNotes", async (req, res) => {
-    try {
-      const { id } = req.body;
-      const noteObject = await noteModel.findByIdAndUpdate(id,req.body);
-      if(!noteObject){
-        return res.status(404).json({message:`cannot find any note with id ${id}`})
-      }
-      const updatedNote= await noteModel.findById(id);
-      res.status(200).json(updatedNote);
-    } catch (error) {
-      console.log(error);
-      res.status(500).json({ message: error.message });
+  try {
+    const { id } = req.body;
+    const noteObject = await noteModel.findByIdAndUpdate(id, req.body);
+    if (!noteObject) {
+      return res
+        .status(404)
+        .json({ message: `cannot find any note with id ${id}` });
     }
-  });
-  app.delete("/notes", async (req, res) => {
-    try {
-      const { id } = req.body;
-      let deletedNote =await noteModel.findOneAndDelete(id)
-      res.status(200).json(deletedNote);
-    } catch (error) {
-      console.log(error);
-      res.status(500).json({ message: error.message });
+    const updatedNote = await noteModel.findById(id);
+    res.status(200).json(updatedNote);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+});
+app.delete("/deleteNotes", async (req, res) => {
+  try {
+    const { id } = req.body;
+    let deletedNote = await noteModel.findByIdAndDelete(id);
+    if (!deletedNote) {
+      return res
+        .status(404)
+        .json({ message: "Cannot delete the specified Note" });
     }
-  });
+    res.status(200).json(deletedNote);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+});
 
 mongoose
   .connect(
